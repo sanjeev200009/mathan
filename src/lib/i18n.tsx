@@ -17,6 +17,8 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(KEY);
+      // Read after mount: the page is prerendered, so the saved choice is only known in the browser.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved === "en" || saved === "ta") setLangState(saved);
     } catch {}
   }, []);

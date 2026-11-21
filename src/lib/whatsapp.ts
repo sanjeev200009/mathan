@@ -49,12 +49,11 @@ export function orderMessage(lines: CartLine[], c: Customer, lang: Lang, orderNo
   const sub = subtotalOf(lines);
   const fee = deliveryFeeOf(sub, c.method);
   const items = lines
-    .map((l, i) => {
+    .flatMap((l) => {
       const p = productById(l.id);
-      if (!p) return "";
-      return `${i + 1}. ${p.name[lang]} (${p.unit[lang]}) × ${l.qty} = ${formatPrice(p.price * l.qty)}`;
+      return p ? [{ p, qty: l.qty }] : [];
     })
-    .filter(Boolean)
+    .map(({ p, qty }, i) => `${i + 1}. ${p.name[lang]} (${p.unit[lang]}) × ${qty} = ${formatPrice(p.price * qty)}`)
     .join("\n");
 
   const rows = [
@@ -71,16 +70,17 @@ export function orderMessage(lines: CartLine[], c: Customer, lang: Lang, orderNo
     `${ta ? "பெயர்" : "Name"}: ${c.name}`,
     `${ta ? "தொலைபேசி" : "Phone"}: ${c.phone}`,
     `${ta ? "முறை" : "Method"}: ${c.method === "delivery" ? (ta ? "வீட்டுக்கு விநியோகம்" : "Home delivery") : ta ? "கடையில் பெறுதல்" : "Store pickup"}`,
-    c.method === "delivery" ? `${ta ? "முகவரி" : "Address"}: ${c.address}${c.area ? `, ${c.area}` : ""}` : "",
-    c.time ? `${ta ? "விரும்பும் நேரம்" : "Preferred time"}: ${c.time}` : "",
-    `${ta ? "கட்டணம்" : "Payment"}: ${ta ? "பணமாக (Cash on Delivery)" : "Cash on Delivery"}`,
-    c.notes ? `${ta ? "குறிப்பு" : "Notes"}: ${c.notes}` : "",
+    c.method === "delivery" ? `${ta ? "முகவரி" : "Address"}: ${c.address}${c.area ? `, ${c.area}` : ""}` : null,
+    c.time ? `${ta ? "விரும்பும் நேரம்" : "Preferred time"}: ${c.time}` : null,
+    `${ta ? "கட்டணம்" : "Payment"}: ${
+      c.method === "delivery"
+        ? ta ? "பணமாக (Cash on Delivery)" : "Cash on Delivery"
+        : ta ? "கடையில் பெறும்போது பணமாக" : "Pay at the store on pickup"
+    }`,
+    c.notes ? `${ta ? "குறிப்பு" : "Notes"}: ${c.notes}` : null,
     "",
     ta ? "தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும். நன்றி! 🙏" : "Please confirm my order. Thank you! 🙏",
-  ].filter((r) => r !== null);
-  // Drop empty optional rows but keep single blank lines between blocks.
-  return rows
-    .filter((r, i) => r !== "" || (rows[i - 1] !== "" && i > 0))
-    .join("\n")
-    .trim();
+  ];
+  // Optional rows are null and simply left out; "" rows are the blank lines between blocks.
+  return rows.filter((r) => r !== null).join("\n").trim();
 }

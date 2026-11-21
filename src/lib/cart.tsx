@@ -7,6 +7,8 @@ import { subtotalOf, type CartLine } from "./whatsapp";
 // Cart (kept in the browser) + the little shared shop state:
 // the cart drawer and the product filter that the header search and nav drive.
 type Ctx = {
+  /** False until the saved cart has been read from the browser. */
+  loaded: boolean;
   lines: CartLine[];
   count: number;
   subtotal: number;
@@ -39,6 +41,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only saved cart, read after mount
       if (raw) setLines((JSON.parse(raw) as CartLine[]).filter((l) => l && l.id && l.qty > 0));
     } catch {}
     setLoaded(true);
@@ -67,6 +70,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value: Ctx = {
+    loaded,
     lines,
     count: lines.reduce((s, l) => s + l.qty, 0),
     subtotal: subtotalOf(lines),
