@@ -3,23 +3,25 @@
 import { useRef, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
-import { CATEGORIES, PRODUCTS } from "@/lib/products";
+import { CATEGORIES, PRODUCTS, VEG_GROUPS } from "@/lib/products";
 import { gsap, motionOK, reveal, useGSAP } from "@/lib/gsap";
 import { CloseIcon, LeafIcon } from "./icons";
 import ProductCard from "./ProductCard";
 
 export default function Products() {
   const { t } = useLang();
-  const { query, setQuery, category, setCategory } = useCart();
+  const { query, setQuery, category, setCategory, group } = useCart();
   const [showAll, setShowAll] = useState(false);
   const ref = useRef<HTMLElement>(null);
   const first = useRef(true);
 
   const q = query.trim().toLowerCase();
-  const filtering = category !== "all" || q !== "";
+  const grp = VEG_GROUPS.find((g) => g.id === group);
+  const filtering = category !== "all" || q !== "" || !!grp;
   const list = PRODUCTS.filter(
     (p) =>
       (category === "all" || p.category === category) &&
+      (!grp || grp.ids.includes(p.id)) &&
       (!q || p.name.en.toLowerCase().includes(q) || p.name.ta.toLowerCase().includes(q)),
   );
   const shown = filtering || showAll ? list : list.filter((p) => p.featured);
@@ -27,7 +29,9 @@ export default function Products() {
 
   const heading = q
     ? t(`Results for '${query.trim()}'`, `'${query.trim()}' க்கான முடிவுகள்`)
-    : cat
+    : grp
+      ? t(grp.name.en, grp.name.ta)
+      : cat
       ? t(cat.name.en, cat.name.ta)
       : showAll
         ? t("All Products", "அனைத்து பொருட்கள்")
@@ -48,7 +52,7 @@ export default function Products() {
       if (!motionOK()) return;
       gsap.from("[data-card]", { y: 20, opacity: 0, duration: 0.45, ease: "power2.out", stagger: 0.04 });
     },
-    { scope: ref, dependencies: [category, q, showAll] },
+    { scope: ref, dependencies: [category, q, showAll, group] },
   );
 
   const chip = (active: boolean) =>

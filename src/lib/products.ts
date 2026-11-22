@@ -62,5 +62,16 @@ export const PRODUCTS: Product[] = [
   p("sugar", "Sugar", "சீனி", kg, 290, "grocery"),
 ];
 
-export const formatPrice = (n: number) => `Rs. ${n.toLocaleString("en-LK")}`;
+// Vegetable groups for the "farm fresh" banner: tapping one shows just these in the shop.
+export type VegGroupId = "greens" | "roots" | "everyday" | "spice";
+export type VegGroup = { id: VegGroupId; name: L; note: L; ids: string[]; image: string };
+
+export const VEG_GROUPS: VegGroup[] = [
+  { id: "greens", name: { en: "Leafy greens", ta: "கீரை வகைகள்" }, note: { en: "Cut this morning", ta: "இன்று காலை பறித்தவை" }, ids: ["spinach", "ponnanganni", "curry-leaves", "vallarai"], image: "/images/products/spinach.jpg" },
+  { id: "roots", name: { en: "Root vegetables", ta: "கிழங்கு வகைகள்" }, note: { en: "Straight from the soil", ta: "மண்ணிலிருந்து நேரடியாக" }, ids: ["carrot", "potato", "onion"], image: "/images/products/carrot.jpg" },
+  { id: "everyday", name: { en: "Everyday curry vegetables", ta: "அன்றாட கறி காய்கள்" }, note: { en: "For today's curry", ta: "இன்றைய கறிக்கு" }, ids: ["brinjal", "cabbage", "beans"], image: "/images/products/brinjal.jpg" },
+  { id: "spice", name: { en: "Tomato & chilli", ta: "தக்காளி & மிளகாய்" }, note: { en: "Ripe and firm", ta: "பழுத்து உறுதியானவை" }, ids: ["tomato", "green-chilli"], image: "/images/products/tomato.jpg" },
+];
+
+export const formatPrice =(n: number) => `Rs. ${n.toLocaleString("en-LK")}`;
 export const productById = (id: string) => PRODUCTS.find((x) => x.id === id);

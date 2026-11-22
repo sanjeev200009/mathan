@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { CategoryId } from "./products";
+import type { CategoryId, VegGroupId } from "./products";
 import { subtotalOf, type CartLine } from "./whatsapp";
 
 // Cart (kept in the browser) + the little shared shop state:
@@ -22,7 +22,11 @@ type Ctx = {
   query: string;
   setQuery: (q: string) => void;
   category: CategoryId | "all";
+  /** Also clears the vegetable group, so the nav and chips always win. */
   setCategory: (c: CategoryId | "all") => void;
+  /** A vegetable group from the banner; null = no group filter. */
+  group: VegGroupId | null;
+  setGroup: (g: VegGroupId | null) => void;
   /** Bumps on every add so the header cart icon can pop (GSAP). */
   addedTick: number;
 };
@@ -37,6 +41,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [addedTick, setAddedTick] = useState(0);
+  const [group, setGroup] = useState<VegGroupId | null>(null);
 
   useEffect(() => {
     try {
@@ -82,9 +87,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     cartOpen,
     setCartOpen,
     query,
-    setQuery,
+    setQuery: (q) => {
+      setQuery(q);
+      if (q) setGroup(null);
+    },
     category,
-    setCategory,
+    setCategory: (c) => {
+      setCategory(c);
+      setGroup(null);
+    },
+    group,
+    setGroup: (g) => {
+      setGroup(g);
+      setCategory("all");
+      setQuery("");
+    },
     addedTick,
   };
   return <CartCtx.Provider value={value}>{children}</CartCtx.Provider>;
