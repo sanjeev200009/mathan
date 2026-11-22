@@ -17,7 +17,8 @@ export default function Logo({ light = false }: { light?: boolean }) {
         <span className={`block font-display text-xl md:text-2xl font-extrabold ${light ? "text-white" : "text-brand"}`}>
           Pasumai <span className={light ? "text-leaf" : "text-leaf"}>Fresh</span>
         </span>
-        <span className={`block text-[11px] md:text-xs ${light ? "text-white/75" : "text-muted"}`}>
+        {/* In the header bar the tagline gives way on small phones so the icons fit. */}
+        <span className={`text-[11px] md:text-xs ${light ? "block text-white/75" : "hidden text-muted sm:block"}`}>
           {t("Freshness for your life", "பசுமை.. உங்கள் வாழ்க்கைக்கு")}
         </span>
       </span>

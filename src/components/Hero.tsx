@@ -56,10 +56,10 @@ export default function Hero() {
   const go = (d: number) => setCur((c) => (c + d + SLIDES.length) % SLIDES.length);
 
   return (
-    // Full width, edge to edge; the text sits inside the page width.
+    // Full width and the full first screen under the 64px bar, so nothing below peeks in.
     <section ref={root}>
       <div
-        className="relative h-[540px] overflow-hidden bg-brand-dark md:h-[min(560px,calc(100dvh-150px))] md:min-h-[460px]"
+        className="relative h-[calc(100svh-64px)] min-h-[520px] overflow-hidden bg-brand-dark"
         onMouseEnter={() => (paused.current = true)}
         onMouseLeave={() => (paused.current = false)}
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}

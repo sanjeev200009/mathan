@@ -93,7 +93,7 @@ export default function MobileMenu() {
   const link = "flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[15px] font-medium text-ink hover:bg-brand-soft";
 
   return (
-    <div className="fixed inset-0 z-[60] md:hidden">
+    <div className="fixed inset-0 z-[60] lg:hidden">
       <div ref={backdrop} className="absolute inset-0 bg-black/45" onClick={() => setOpen(false)} aria-hidden />
       <div
         ref={panel}

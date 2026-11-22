@@ -2,32 +2,28 @@
 
 import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
-import { CartIcon, LeafIcon, MenuIcon, SearchIcon, WhatsAppIcon } from "@/components/icons";
+import { CartIcon, CloseIcon, MenuIcon, SearchIcon, WhatsAppIcon } from "@/components/icons";
 import { useCart } from "@/lib/cart";
 import { gsap, motionOK, useGSAP } from "@/lib/gsap";
 import { useLang } from "@/lib/i18n";
 import { CATEGORIES, type CategoryId } from "@/lib/products";
 import { STORE_PHONE_DISPLAY, helloMessage, waLink } from "@/lib/whatsapp";
 
-const TruckIcon = ({ className = "size-4" }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
-    <path d="M2 6h11v10H2zM13 9h4l3 3v4h-7" />
-    <circle cx="6" cy="17.5" r="1.6" />
-    <circle cx="17" cy="17.5" r="1.6" />
-  </svg>
-);
 
 const toProducts = () => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
 
+// One clean bar: logo · four links (categories under "Shop") · search · language · WhatsApp · cart.
+// Phones: logo · search · cart · menu (the menu holds the links and the language).
 export default function Header() {
   const { lang, setLang, t } = useLang();
   const { count, setCartOpen, query, setQuery, category, setCategory, addedTick } = useCart();
-  const barRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 40);
+    const on = () => setScrolled(window.scrollY > 8);
     on();
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
@@ -54,175 +50,150 @@ export default function Header() {
     else toProducts();
   };
 
-  const navBtn = (active: boolean) =>
-    `rounded-full px-3 py-1 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-      active ? "bg-brand-light text-brand-dark font-semibold" : "text-muted hover:bg-brand-soft hover:text-brand-dark"
+  const link = (active = false) =>
+    `rounded-full px-3 py-1.5 text-sm whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-brand ${
+      active ? "bg-brand-light font-semibold text-brand-dark" : "text-muted hover:text-brand-dark"
     }`;
 
-  const langBtn = (l: "ta" | "en", label: string) => (
-    <button
-      type="button"
-      onClick={() => setLang(l)}
-      aria-pressed={lang === l}
-      className={`px-1 focus-visible:outline-2 focus-visible:outline-brand ${lang === l ? "font-bold text-brand-dark underline underline-offset-4" : "opacity-80 hover:opacity-100"}`}
+  const iconBtn =
+    "relative grid size-10 shrink-0 place-items-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-brand";
+
+  const search = (
+    <form
+      role="search"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setSearchOpen(false);
+        toProducts();
+      }}
+      className="flex h-10 min-w-0 items-center gap-2 rounded-full bg-brand-soft px-3 ring-1 ring-line focus-within:ring-brand"
     >
-      {label}
-    </button>
+      <SearchIcon className="size-4 shrink-0 text-muted" />
+      <input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={t("Search products", "பொருட்களைத் தேடுக")}
+        aria-label={t("Search for products", "பொருட்களைத் தேடுக")}
+        className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted"
+      />
+    </form>
   );
 
-  const veg = CATEGORIES[0];
-  const rest = CATEGORIES.slice(1);
-
   return (
-    <>
-      {/* Top bar: scrolls away */}
-      <div className="bg-brand-soft text-muted text-xs border-b border-line">
-        <div className="container-x flex items-center justify-between gap-3 py-1">
-          <p className="hidden md:flex items-center gap-1.5">
-            <LeafIcon className="size-3.5 text-brand" />
-            {t("Fresh • Quality • To your home", "புத்துணர்வு • தரமானது • உங்கள் வீட்டிற்கே")}
-          </p>
-          <p className="flex items-center gap-1.5 min-w-0">
-            <TruckIcon className="size-4 shrink-0" />
-            <span className="hidden md:inline">{t("Free delivery on orders over Rs. 3,000", "ரூ. 3,000க்கு மேல் ஆர்டர்களுக்கு இலவச விநியோகம்")}</span>
-            <span className="md:hidden truncate">{t("Free delivery over Rs. 3,000", "ரூ. 3,000+ இலவச விநியோகம்")}</span>
-          </p>
-          <div className="flex items-center gap-1 shrink-0" role="group" aria-label={t("Language", "மொழி")}>
-            {langBtn("ta", "தமிழ்")}
-            <span aria-hidden className="opacity-60">|</span>
-            {langBtn("en", "English")}
-          </div>
-        </div>
-      </div>
+    <header
+      ref={barRef}
+      className={`sticky top-0 z-40 bg-white/95 backdrop-blur transition-shadow ${scrolled ? "shadow-[0_1px_0_var(--color-line),0_8px_24px_-16px_rgba(16,40,24,0.25)]" : "shadow-[0_1px_0_var(--color-line)]"}`}
+    >
+      <div className="container-x flex h-16 items-center gap-3 lg:gap-6">
+        <Logo />
 
-      {/* Main header + nav: sticky */}
-      <div ref={barRef} className={`sticky top-0 z-40 bg-white transition-shadow ${scrolled ? "shadow-md" : ""}`}>
-        <div className="container-x flex flex-wrap items-center gap-x-4 gap-y-2 py-2.5">
-          <Logo />
-
-          <form
-            role="search"
-            onSubmit={(e) => {
-              e.preventDefault();
-              toProducts();
-            }}
-            className="order-last md:order-none w-full md:w-auto md:flex-1 md:max-w-xl md:mx-auto flex"
-          >
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("Search for products...", "எந்த பொருளை தேடுகிறீர்கள்?")}
-              aria-label={t("Search for products", "பொருட்களைத் தேடுக")}
-              className="min-w-0 flex-1 rounded-l-lg border border-r-0 border-line px-3 py-2 text-sm outline-none focus:border-brand"
-            />
-            <button
-              type="submit"
-              aria-label={t("Search", "தேடு")}
-              className="rounded-r-lg bg-brand px-4 text-white hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-            >
-              <SearchIcon />
-            </button>
-          </form>
-
-          <div className="ml-auto md:ml-0 flex items-center gap-2 sm:gap-4">
-            <a
-              href={waLink(helloMessage(lang))}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-brand"
-            >
-              <span className="grid size-10 place-items-center rounded-full bg-whatsapp text-white">
-                <WhatsAppIcon className="size-6" />
-              </span>
-              <span className="leading-tight">
-                <span className="block text-sm font-bold text-ink whitespace-nowrap">{STORE_PHONE_DISPLAY}</span>
-                <span className="block text-xs text-muted whitespace-nowrap">{t("Order on WhatsApp", "WhatsApp மூலம் ஆர்டர் செய்ய")}</span>
-              </span>
-            </a>
-
-            <button
-              type="button"
-              data-cart-icon
-              onClick={() => setCartOpen(true)}
-              aria-label={t(`Cart, ${count} items`, `கூடை, ${count} பொருட்கள்`)}
-              className="relative flex flex-col items-center rounded-lg px-1 text-brand focus-visible:outline-2 focus-visible:outline-brand"
-            >
-              <CartIcon className="size-7" />
-              <span className="text-[11px] text-ink">{t("Cart", "கூடை")}</span>
-              {count > 0 && (
-                <span
-                  ref={badgeRef}
-                  className="absolute -top-1 -right-1 grid min-w-5 h-5 place-items-center rounded-full bg-sale px-1 text-[11px] font-bold text-white"
-                >
-                  {count}
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event("pf:open-menu"))}
-              aria-label={t("Open menu", "மெனுவைத் திற")}
-              className="md:hidden rounded-lg p-1 text-ink focus-visible:outline-2 focus-visible:outline-brand"
-            >
-              <MenuIcon />
-            </button>
-          </div>
-        </div>
-
-        <nav aria-label={t("Main", "முதன்மை")} className="hidden md:block border-t border-line bg-white">
-          <ul className="container-x flex flex-wrap items-center gap-0.5 py-1 text-[13px] font-medium">
+        <nav aria-label={t("Main", "முதன்மை")} className="hidden lg:block">
+          <ul className="flex items-center gap-1">
             <li>
-              <button type="button" onClick={() => pick("all")} className={navBtn(category === "all")}>
+              <button type="button" onClick={() => pick("all")} className={link(category === "all")}>
                 {t("Home", "முகப்பு")}
               </button>
             </li>
             <li className="group relative">
-              <button
-                type="button"
-                onClick={() => pick(veg.id)}
-                aria-haspopup="true"
-                className={navBtn(category === veg.id)}
-              >
-                {veg.name[lang]} ▾
+              <button type="button" aria-haspopup="true" onClick={() => toProducts()} className={link(category !== "all")}>
+                {t("Shop", "பொருட்கள்")} <span aria-hidden className="text-[10px]">▾</span>
               </button>
-              {/* Dropdown: hover or keyboard focus inside */}
-              <ul className="invisible absolute left-0 top-full z-50 min-w-48 pt-1 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                <li className="rounded-lg border border-line bg-white p-1 shadow-lg">
+              {/* Categories: hover or keyboard focus */}
+              <div className="invisible absolute left-0 top-full z-50 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                <ul className="min-w-52 rounded-2xl border border-black/[0.06] bg-white p-2 shadow-[0_12px_32px_-12px_rgba(16,40,24,0.25)]">
                   {CATEGORIES.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => pick(c.id)}
-                      className="block w-full rounded-md px-3 py-2 text-left whitespace-nowrap hover:bg-brand-light hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
-                    >
-                      {c.name[lang]}
-                    </button>
+                    <li key={c.id}>
+                      <button
+                        type="button"
+                        onClick={() => pick(c.id)}
+                        className="flex w-full items-center justify-between gap-4 rounded-xl px-3 py-2 text-left text-sm whitespace-nowrap hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-brand"
+                      >
+                        <span className="font-medium text-ink">{c.name[lang]}</span>
+                        <span className="text-xs text-muted">{c.count[lang]}</span>
+                      </button>
+                    </li>
                   ))}
-                </li>
-              </ul>
+                </ul>
+              </div>
             </li>
-            {rest.map((c) => (
-              <li key={c.id}>
-                <button type="button" onClick={() => pick(c.id)} className={navBtn(category === c.id)}>
-                  {c.name[lang]}
-                </button>
-              </li>
-            ))}
             <li>
-              <a href="#services" className={navBtn(false)}>
-                {t("Our Services", "எங்கள் சேவைகள்")}
+              <a href="#services" className={link()}>
+                {t("Services", "சேவைகள்")}
               </a>
             </li>
             <li>
-              <a href="#contact" className={navBtn(false)}>
-                {t("Contact", "தொடர்பு கொள்ள")}
+              <a href="#contact" className={link()}>
+                {t("Contact", "தொடர்பு")}
               </a>
             </li>
           </ul>
         </nav>
+
+        <div className="ml-auto hidden w-56 md:block xl:w-72">{search}</div>
+
+        <div className="ml-auto flex items-center gap-1 md:ml-0">
+          <button
+            type="button"
+            onClick={() => setSearchOpen((v) => !v)}
+            aria-label={t("Search", "தேடு")}
+            aria-expanded={searchOpen}
+            className={`${iconBtn} text-ink hover:bg-brand-soft md:hidden`}
+          >
+            {searchOpen ? <CloseIcon /> : <SearchIcon />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setLang(lang === "ta" ? "en" : "ta")}
+            aria-label={t("Switch to Tamil", "Switch to English")}
+            className="hidden h-10 shrink-0 rounded-full px-3 text-sm font-semibold text-ink ring-1 ring-line transition-colors hover:bg-brand-soft focus-visible:outline-2 focus-visible:outline-brand lg:block"
+          >
+            {lang === "ta" ? "EN" : "தமிழ்"}
+          </button>
+
+          <a
+            href={waLink(helloMessage(lang))}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={STORE_PHONE_DISPLAY}
+            aria-label={t(`Order on WhatsApp, ${STORE_PHONE_DISPLAY}`, `WhatsApp மூலம் ஆர்டர், ${STORE_PHONE_DISPLAY}`)}
+            className={`${iconBtn} hidden bg-whatsapp text-white hover:brightness-95 sm:grid`}
+          >
+            <WhatsAppIcon className="size-5" />
+          </a>
+
+          <button
+            type="button"
+            data-cart-icon
+            onClick={() => setCartOpen(true)}
+            aria-label={t(`Cart, ${count} items`, `கூடை, ${count} பொருட்கள்`)}
+            className={`${iconBtn} text-ink hover:bg-brand-soft`}
+          >
+            <CartIcon className="size-6" />
+            {count > 0 && (
+              <span
+                ref={badgeRef}
+                className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-sale px-1 text-[11px] font-bold text-white"
+              >
+                {count}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("pf:open-menu"))}
+            aria-label={t("Open menu", "மெனுவைத் திற")}
+            className={`${iconBtn} text-ink hover:bg-brand-soft lg:hidden`}
+          >
+            <MenuIcon />
+          </button>
+        </div>
       </div>
-    </>
+
+      {/* Phone search: opens under the bar only when asked for */}
+      {searchOpen && <div className="container-x pb-3 md:hidden">{search}</div>}
+    </header>
   );
 }
