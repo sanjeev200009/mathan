@@ -28,15 +28,6 @@ export const subtotalOf = (lines: CartLine[]) =>
 export const deliveryFeeOf = (subtotal: number, method: Customer["method"]) =>
   method === "pickup" || subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
 
-/** One product, straight from a product card. */
-export function productMessage(id: string, qty: number, lang: Lang) {
-  const p = productById(id);
-  if (!p) return "";
-  return lang === "ta"
-    ? `வணக்கம் பசுமை ஃப்ரெஷ்! 🌿\nநான் ஆர்டர் செய்ய விரும்புகிறேன்:\n• ${p.name.ta} (${p.unit.ta}) × ${qty} = ${formatPrice(p.price * qty)}\nதயவுசெய்து உறுதிப்படுத்தவும்.`
-    : `Hello Pasumai Fresh! 🌿\nI would like to order:\n• ${p.name.en} (${p.unit.en}) × ${qty} = ${formatPrice(p.price * qty)}\nPlease confirm.`;
-}
-
 /** A general hello for buttons that are not about one product (hero, floating button). */
 export const helloMessage = (lang: Lang) =>
   lang === "ta"

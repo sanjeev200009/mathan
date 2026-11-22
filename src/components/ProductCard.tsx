@@ -5,9 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart";
 import { useLang } from "@/lib/i18n";
 import { formatPrice, type Product } from "@/lib/products";
-import { productMessage, waLink } from "@/lib/whatsapp";
 import { gsap, motionOK } from "@/lib/gsap";
-import { CartIcon, WhatsAppIcon } from "./icons";
+import { CartIcon } from "./icons";
 
 // Flies a small copy of the product picture to the header cart icon.
 function flyToCart(img: HTMLElement | null) {
@@ -62,51 +61,50 @@ export default function ProductCard({ product }: { product: Product }) {
     setAdded(true);
   };
 
-  const btn = "flex min-h-9 w-full items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-center text-[11px] leading-tight font-semibold sm:text-xs";
+  // The card's six rules:
+  // 1 padding 24px on every side (16px on a phone, where two cards share 375px);
+  // 2 one loud thing: the price; 3 inner radius = outer radius - padding (--r and --p);
+  // 4 depth = a hairline border + one soft shadow; 5 one full-width button;
+  // 6 hover lifts the same card 4px and deepens its shadow, nothing else moves.
+  const btn =
+    "flex h-11 w-full items-center justify-center gap-2 rounded-[calc(var(--r)-var(--p))] text-sm font-semibold transition-colors";
 
   return (
-    <article data-card className="group flex w-full flex-col rounded-lg border border-line bg-white p-2.5 transition-shadow hover:shadow-md sm:p-3">
-      <div ref={imgRef} className="relative aspect-square overflow-hidden rounded-md bg-brand-soft">
+    <article
+      data-card
+      className="flex w-full flex-col rounded-[var(--r)] border border-black/[0.06] bg-white p-[var(--p)] shadow-[0_1px_2px_rgba(16,40,24,0.04),0_8px_24px_-12px_rgba(16,40,24,0.12)] transition-[translate,box-shadow] duration-200 ease-out [--p:16px] [--r:24px] hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(16,40,24,0.05),0_16px_32px_-12px_rgba(16,40,24,0.2)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:[--p:24px] sm:[--r:32px]"
+    >
+      <div ref={imgRef} className="relative aspect-square overflow-hidden rounded-[calc(var(--r)-var(--p))] bg-brand-soft">
         <Image
           src={product.image}
           alt={product.name[lang]}
           fill
           sizes="(min-width:1280px) 16vw, (min-width:1024px) 22vw, (min-width:768px) 30vw, 46vw"
-          className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+          className="object-contain p-2"
         />
       </div>
 
-      <h3 className="mt-2.5 line-clamp-2 text-sm font-semibold text-ink">{product.name[lang]}</h3>
-      <p className="text-xs text-muted">{product.unit[lang]}</p>
-      <p className="mt-1 text-base font-bold text-brand">{formatPrice(product.price)}</p>
+      <h3 className="mt-4 line-clamp-2 text-sm font-medium text-ink">{product.name[lang]}</h3>
+      <p className="mt-0.5 text-xs text-muted">{product.unit[lang]}</p>
+      <p className="mt-3 font-display text-2xl font-extrabold leading-none text-ink">{formatPrice(product.price)}</p>
 
-      <div className="mt-auto flex flex-col gap-1.5 pt-2.5">
-        <a
-          href={waLink(productMessage(product.id, qty || 1, lang))}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${btn} bg-brand text-white hover:bg-brand-dark`}
-        >
-          <WhatsAppIcon className="size-4 shrink-0" />
-          <span>{t("Order on WhatsApp", "WhatsApp மூலம் ஆர்டர்")}</span>
-        </a>
-
+      <div className="mt-auto pt-4">
         {qty > 0 && !added ? (
-          <div className="flex min-h-9 items-center justify-between rounded-md border border-brand text-brand">
+          <div className={`${btn} justify-between bg-brand-light text-brand-dark`}>
             <button
               type="button"
               onClick={() => setQty(product.id, qty - 1)}
               aria-label={t("Remove one", "ஒன்றைக் குறை")}
-              className="h-9 w-9 text-lg font-bold hover:bg-brand-light"
+              className="grid h-full w-11 place-items-center text-lg font-bold"
             >
               −
             </button>
-            <span className="text-sm font-bold" aria-live="polite">{qty}</span>
+            <span className="font-bold" aria-live="polite">{qty}</span>
             <button
               type="button"
               onClick={() => add(product.id)}
               aria-label={t("Add one", "ஒன்றைச் சேர்")}
-              className="h-9 w-9 text-lg font-bold hover:bg-brand-light"
+              className="grid h-full w-11 place-items-center text-lg font-bold"
             >
               +
             </button>
@@ -115,7 +113,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <button
             type="button"
             onClick={onAdd}
-            className={`${btn} border ${added ? "border-brand bg-brand-light text-brand" : "border-line text-ink hover:border-brand hover:text-brand"}`}
+            className={`${btn} ${added ? "bg-brand-light text-brand-dark" : "bg-brand text-white hover:bg-brand-dark"}`}
           >
             {added ? (
               <span>{t("Added ✓", "சேர்க்கப்பட்டது ✓")}</span>
