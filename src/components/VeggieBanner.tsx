@@ -47,7 +47,7 @@ export default function VeggieBanner() {
   ];
 
   return (
-    <section ref={root} className="container-x pt-8 md:pt-10" aria-labelledby="veg-banner-title">
+    <section ref={root} className="container-x pt-10 md:pt-14" aria-labelledby="veg-banner-title">
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-dark via-brand to-brand-dark p-5 text-white md:p-8 lg:p-10">
         {/* soft decoration */}
         <LeafIcon className="pointer-events-none absolute -left-6 top-6 size-28 text-white/5" />

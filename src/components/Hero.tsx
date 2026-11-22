@@ -56,9 +56,10 @@ export default function Hero() {
   const go = (d: number) => setCur((c) => (c + d + SLIDES.length) % SLIDES.length);
 
   return (
-    <section ref={root} className="container-x pt-4 md:pt-6">
+    // Full width, edge to edge; the text sits inside the page width.
+    <section ref={root}>
       <div
-        className="relative h-[520px] overflow-hidden rounded-3xl bg-brand-dark md:h-[420px]"
+        className="relative h-[540px] overflow-hidden bg-brand-dark md:h-[min(560px,calc(100dvh-150px))] md:min-h-[460px]"
         onMouseEnter={() => (paused.current = true)}
         onMouseLeave={() => (paused.current = false)}
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
@@ -76,7 +77,7 @@ export default function Hero() {
               alt=""
               fill
               priority={i === 0}
-              sizes="(min-width: 1280px) 1200px, 100vw"
+              sizes="100vw"
               className="object-cover object-center"
             />
           </div>
@@ -85,14 +86,15 @@ export default function Hero() {
         {/* Dark green wash: left on desktop, top on phones, so the text always reads. */}
         <div className="absolute inset-0 bg-linear-to-b from-brand-dark/95 via-brand-dark/70 to-brand-dark/10 md:bg-linear-to-r md:from-brand-dark/95 md:via-brand-dark/65 md:to-transparent" />
 
-        <div className="relative flex h-full max-w-xl flex-col justify-start gap-3 p-6 pt-10 text-white sm:p-10 md:justify-center md:pt-10">
-          <p data-line className="font-display text-xl font-bold leading-snug sm:text-2xl md:text-[1.7rem]">
+        <div className="container-x relative flex h-full flex-col justify-end pb-14 text-white md:justify-center md:pb-0">
+         <div className="flex max-w-xl flex-col gap-3">
+          <p data-line className="font-display text-lg font-bold leading-snug sm:text-xl md:text-2xl">
             {t("Fresh Vegetables • Fruits • Tender Coconut", "பசுமையான காய்கறிகள் • பழங்கள் • இளநீர்")}
           </p>
-          <h1 data-line className="font-display text-3xl font-extrabold leading-tight text-leaf sm:text-4xl md:text-5xl">
+          <h1 data-line className="font-display text-3xl font-extrabold leading-tight text-leaf sm:text-4xl lg:text-5xl">
             {t("To your home!", "உங்கள் வீட்டிற்கே!")}
           </h1>
-          <p data-line className="text-base text-white/90 sm:text-lg">
+          <p data-line className="text-sm text-white/90 sm:text-base">
             {t("Order today... delivered tomorrow!", "இன்றே ஆர்டர் செய்யுங்கள்... நாளை உங்கள் கதவில்!")}
           </p>
           <div className="mt-3 flex flex-wrap gap-3">
@@ -114,11 +116,12 @@ export default function Hero() {
               {t("Shop in store", "கடையில் வாங்க")}
             </a>
           </div>
+         </div>
         </div>
 
         <div
           data-badge
-          className="absolute right-4 top-4 hidden size-24 -rotate-12 flex-col items-center justify-center rounded-full border-4 border-white/80 bg-brand text-center text-white shadow-xl sm:flex md:right-8 md:top-6 md:size-28"
+          className="absolute right-4 top-4 hidden size-24 -rotate-12 flex-col items-center justify-center rounded-full border-4 border-white/80 bg-brand text-center text-white shadow-xl sm:flex md:right-[max(2rem,calc((100vw-1280px)/2+2rem))] md:top-8 md:size-28"
         >
           <span className="font-display text-2xl font-extrabold leading-none">100%</span>
           <span className="mt-1 px-2 text-[0.65rem] font-semibold leading-tight">

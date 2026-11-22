@@ -55,8 +55,8 @@ export default function Header() {
   };
 
   const navBtn = (active: boolean) =>
-    `rounded-full px-3 lg:px-4 py-1.5 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-      active ? "bg-brand text-white" : "text-ink hover:bg-brand-light hover:text-brand"
+    `rounded-full px-3 py-1 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
+      active ? "bg-brand-light text-brand-dark font-semibold" : "text-muted hover:bg-brand-soft hover:text-brand-dark"
     }`;
 
   const langBtn = (l: "ta" | "en", label: string) => (
@@ -64,7 +64,7 @@ export default function Header() {
       type="button"
       onClick={() => setLang(l)}
       aria-pressed={lang === l}
-      className={`px-1 focus-visible:outline-2 focus-visible:outline-white ${lang === l ? "font-bold underline underline-offset-4" : "opacity-80 hover:opacity-100"}`}
+      className={`px-1 focus-visible:outline-2 focus-visible:outline-brand ${lang === l ? "font-bold text-brand-dark underline underline-offset-4" : "opacity-80 hover:opacity-100"}`}
     >
       {label}
     </button>
@@ -76,10 +76,10 @@ export default function Header() {
   return (
     <>
       {/* Top bar: scrolls away */}
-      <div className="bg-brand-dark text-white text-xs">
-        <div className="container-x flex items-center justify-between gap-3 py-1.5">
+      <div className="bg-brand-soft text-muted text-xs border-b border-line">
+        <div className="container-x flex items-center justify-between gap-3 py-1">
           <p className="hidden md:flex items-center gap-1.5">
-            <LeafIcon className="size-3.5 text-leaf" />
+            <LeafIcon className="size-3.5 text-brand" />
             {t("Fresh • Quality • To your home", "புத்துணர்வு • தரமானது • உங்கள் வீட்டிற்கே")}
           </p>
           <p className="flex items-center gap-1.5 min-w-0">
@@ -97,7 +97,7 @@ export default function Header() {
 
       {/* Main header + nav: sticky */}
       <div ref={barRef} className={`sticky top-0 z-40 bg-white transition-shadow ${scrolled ? "shadow-md" : ""}`}>
-        <div className="container-x flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
+        <div className="container-x flex flex-wrap items-center gap-x-4 gap-y-2 py-2.5">
           <Logo />
 
           <form
@@ -171,8 +171,8 @@ export default function Header() {
           </div>
         </div>
 
-        <nav aria-label={t("Main", "முதன்மை")} className="hidden md:block border-y border-line bg-brand-soft">
-          <ul className="container-x flex flex-wrap items-center gap-1 py-1.5 text-[13px] lg:text-sm font-medium">
+        <nav aria-label={t("Main", "முதன்மை")} className="hidden md:block border-t border-line bg-white">
+          <ul className="container-x flex flex-wrap items-center gap-0.5 py-1 text-[13px] font-medium">
             <li>
               <button type="button" onClick={() => pick("all")} className={navBtn(category === "all")}>
                 {t("Home", "முகப்பு")}
