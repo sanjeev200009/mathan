@@ -1,11 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { LangProvider } from "@/lib/i18n";
+import { CartProvider } from "@/lib/cart";
+import CartDrawer from "@/components/CartDrawer";
+import MobileMenu from "@/components/MobileMenu";
+import MobileBottomBar from "@/components/MobileBottomBar";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 // Fonts are self-hosted (src/app/fonts) so the site never waits on Google Fonts.
-// ponytail: Latin characters only; add the other subsets' files if the store needs them.
-
-// Body and UI text: Inter reads cleanly at small sizes (product cards, prices, forms).
 const inter = localFont({
   src: "./fonts/Inter.woff2",
   weight: "100 900",
@@ -13,7 +16,6 @@ const inter = localFont({
   display: "swap",
 });
 
-// Headings, product names, hero text.
 const jakarta = localFont({
   src: "./fonts/PlusJakartaSans.woff2",
   weight: "200 800",
@@ -22,17 +24,27 @@ const jakarta = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Mathan",
-  description: "Online store",
+  title: "Pasumai Fresh — பசுமை உங்கள் வாழ்க்கைக்கு",
+  description:
+    "Fresh vegetables, fruits, tender coconut, greens and groceries delivered to your home. Order on WhatsApp, pay cash on delivery.",
 };
+
+export const viewport: Viewport = { themeColor: "#1b7a36" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${jakarta.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+    <html lang="ta" className={`${inter.variable} ${jakarta.variable} antialiased`}>
+      <body className="min-h-dvh flex flex-col font-sans">
+        <LangProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+            <MobileMenu />
+            <MobileBottomBar />
+            <FloatingWhatsApp />
+          </CartProvider>
+        </LangProvider>
+      </body>
     </html>
   );
 }

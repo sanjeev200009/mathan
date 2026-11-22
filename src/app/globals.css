@@ -1,28 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Pasumai Fresh — one light, green theme (the design has no dark mode). */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  /* font-sans = body/UI (Inter), font-display = headings (Plus Jakarta Sans) */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #1b7a36; /* main green: buttons, nav, prices */
+  --color-brand-dark: #0f4d22; /* footer, top bar, hover */
+  --color-brand-light: #e9f5ea; /* soft green panels */
+  --color-brand-soft: #f4faf3; /* section backgrounds */
+  --color-leaf: #6abf3c; /* accents */
+  --color-whatsapp: #25d366;
+  --color-ink: #1d2a1f; /* headings */
+  --color-muted: #5f6b62; /* secondary text */
+  --color-line: #e3eae3; /* borders */
+  --color-sale: #e4572e;
+
+  /* font-sans = body/UI (Inter), font-display = headings (Plus Jakarta Sans).
+     Tamil letters fall back to the system's Tamil font (Nirmala UI / Noto Sans Tamil). */
+  --font-sans: var(--font-inter), "Noto Sans Tamil", "Nirmala UI", "Latha", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), "Noto Sans Tamil", "Nirmala UI", ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 120px; /* anchors land below the sticky header */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #ffffff;
+  color: var(--color-ink);
 }
 
 h1,
@@ -30,5 +34,22 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em; /* Tamil script dislikes tight tracking */
+}
+
+/* Page width used by every section: max 1280px, 16px gutter on phones. */
+@utility container-x {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 768px) {
+    padding-inline: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
